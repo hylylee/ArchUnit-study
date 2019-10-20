@@ -22,7 +22,17 @@ public class HelloServiceTest {
             .should().onlyBeAccessed().byAnyPackage("..controller..", "..service..");
 
     @ArchTest
-    public void services_should_only_be_accessed_by_Controllers(JavaClasses classes) {
+    private static final ArchRule myRule2 = classes()
+            .that().haveNameMatching(".*ServiceDecorator")
+            .should().onlyBeAccessed().byClassesThat().haveSimpleNameEndingWith("Controller");
+
+    @ArchTest
+    public void services_should_only_be_accessed_by_Controllers_and_Services(JavaClasses classes) {
         myRule.check(classes);
+    }
+
+    @ArchTest
+    public void services_should_only_be_accessed_by_Controllers_and_Services_2(JavaClasses classes) {
+        myRule2.check(classes);
     }
 }
