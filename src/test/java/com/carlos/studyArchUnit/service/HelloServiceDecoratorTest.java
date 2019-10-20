@@ -10,19 +10,24 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(ArchUnitRunner.class) // Remove this line for JUnit 5!!
 @AnalyzeClasses(packages = "com.carlos.studyArchUnit")
-public class HelloServiceTest {
+public class HelloServiceDecoratorTest {
 
     @ArchTest
-    private static final ArchRule myRule = classes()
-            .that().resideInAPackage("..service..")
-            .should().onlyBeAccessed().byAnyPackage("..controller..", "..service..");
+    public static final ArchRule dependRule = noClasses().that().resideInAPackage("..service..")
+            .should().dependOnClassesThat().resideInAPackage("..controller..");
+
+    @ArchTest
+    public static final ArchRule haveDependRule = classes().that().resideInAPackage("..service..")
+            .should().onlyHaveDependentClassesThat().resideInAnyPackage("..controller..", "..service..");
 
     @ArchTest
     public void services_should_only_be_accessed_by_Controllers(JavaClasses classes) {
-        myRule.check(classes);
+        dependRule.check(classes);
+        haveDependRule.check(classes);
     }
 }
